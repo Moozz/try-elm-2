@@ -4,6 +4,7 @@ import Html exposing (Html, Attribute, div, input, text, p)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import CardSpelling exposing (spellCard)
+import String exposing (..)
 
 type alias Model = 
     { spell : String
@@ -21,12 +22,23 @@ update msg model =
         Change x ->
             { model | spell = x }
 
+sentence : String -> Html Msg
+sentence card =
+    p [cardStyle] [text card]
+
 view : Model -> Html Msg
 view model =
-    div [ mainStyle ]
-        [ input [ inputStyle, placeholder "Input your card here", onInput Change ] []
-        , p [cardStyle] [ text (spellCard model.spell) ]
-        ]
+    let
+        cards = model.spell
+            |> String.split "," 
+            |> List.map String.trim
+            |> List.map spellCard
+    in
+      
+        div [ mainStyle ]
+            [ input [ inputStyle, placeholder "Input your card here", onInput Change ] []
+            , div [] (List.map sentence cards)
+            ]
 
 mainStyle : Attribute Msg
 mainStyle =
